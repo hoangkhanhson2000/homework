@@ -18,6 +18,8 @@ public class ExcelExporter {
             headerRow.createCell(2).setCellValue("Category Name");
             headerRow.createCell(3).setCellValue("Price");
             headerRow.createCell(4).setCellValue("Expire Date");
+            headerRow.createCell(5).setCellValue("Category");
+
             int rowNum = 1;
             for (Product product : products) {
                 Row row = sheet.createRow(rowNum++);
@@ -26,6 +28,8 @@ public class ExcelExporter {
                 row.createCell(2).setCellValue(product.getCategory().getName());
                 row.createCell(3).setCellValue(product.getPrice());
                 row.createCell(4).setCellValue(product.getExpireDate().toString());
+                row.createCell(4).setCellValue(product.getCategory().getName());
+
             }
 
             // Lưu workbook vào file
