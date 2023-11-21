@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:9000}
+
+swagger:
+  server-url: ${SERVER_HOST_URL_SWAGGER:http://localhost:9000}
+  api-key-name: ${SWAGGER_API_KEY_NAME:}  # Adjusted the property name
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 4MB
+      max-request-size: 8MB
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  datasource:
+    url: ${SECOND_DATABASE_URL:jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8}
+    username: ${SECOND_DATABASE_USER:root}
+    password: ${SECOND_DATABASE_PASSWORD:1234}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: hikari-credit-2
+      auto-commit: true
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+      minimum-idle: 3
+      maximum-pool-size: 20
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate-dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
