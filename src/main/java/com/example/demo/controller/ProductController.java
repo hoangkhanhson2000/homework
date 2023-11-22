@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
 import com.example.demo.service.ExcelExporter;
+import com.example.demo.service.PdfExporter;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -43,7 +44,7 @@ public class ProductController {
         productService.deleteProduct(productId);
         return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
     }
-    @GetMapping("/export")
+    @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportProductsToExcel() {
         List<Product> products = productService.getAllProducts();
 
@@ -59,6 +60,14 @@ public class ProductController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(excelBytes);
+    }
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportProductsToPdf() {
+        List<Product> products = productService.getAllProducts();
+
+        String fileName = "products.pdf";
+
+        return PdfExporter.exportToPdf(products, fileName);
     }
 
 }
