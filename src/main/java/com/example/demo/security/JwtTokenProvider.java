@@ -19,7 +19,6 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     public String generateToken(Authentication authentication) {
-        // Assume that your UserDetails implementation has a getUsername() method
         String username = authentication.getName();
 
         Date now = new Date();

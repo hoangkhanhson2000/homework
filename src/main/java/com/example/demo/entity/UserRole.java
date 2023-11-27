@@ -9,20 +9,18 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "USER_ROLE")
+@Table(name = "USER_ROLES")
 public class UserRole {
-
     @Id
-    @Type(type = "uuid-char")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private Users users;
+    private Users user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
-    private Roles roles;
-
-
+    private Roles role;
 }
+

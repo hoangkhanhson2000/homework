@@ -2,7 +2,7 @@ package com.example.demo.config;
 
 import com.example.demo.security.JwtTokenFilter;
 import com.example.demo.security.JwtTokenProvider;
-import com.example.demo.service.CustomUserDetailsService;
+import com.example.demo.service.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;

@@ -19,10 +19,10 @@ public class Users {
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "USER_ROLES",
+    @JoinTable(
+            name = "USER_ROLES",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @Fetch(FetchMode.JOIN)
     private Set<Roles> roles;
-
 }
+

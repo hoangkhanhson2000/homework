@@ -2,22 +2,18 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Users;
 import com.example.demo.entity.Roles;
-import com.example.demo.modal.UserInfoResponse;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -31,9 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         Users users = userOptional.get();
-
-        // Eagerly fetch roles
-        users.getRoles().size();
 
         String roles = getRoles(users);
 
