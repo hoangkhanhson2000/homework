@@ -3,7 +3,11 @@ server:
 
 swagger:
   server-url: ${SERVER_HOST_URL_SWAGGER:http://localhost:9000}
-  api-key-name: ${SWAGGER_API_KEY_NAME:}  # Adjusted the property name
+
+app:
+  jwt:
+    secret: myGeneratedSecretKey
+    expiration-in-ms: 86400000
 
 spring:
   servlet:
@@ -17,7 +21,7 @@ spring:
   datasource:
     url: ${SECOND_DATABASE_URL:jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8}
     username: ${SECOND_DATABASE_USER:root}
-    password: ${SECOND_DATABASE_PASSWORD:1234}
+    password: ${SECOND_DATABASE_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       pool-name: hikari-credit-2

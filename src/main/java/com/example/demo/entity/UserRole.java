@@ -3,28 +3,26 @@ package com.example.demo.entity;
 import javax.persistence.*;
 
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "USER_ROLE")
-public class UserRole implements Serializable {
+public class UserRole {
 
     @Id
+    @Type(type = "uuid-char")
     private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users users;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role;
+    private Roles roles;
 
-    @Serial
-    private static final long serialVersionUID = 1L;
 
 }
