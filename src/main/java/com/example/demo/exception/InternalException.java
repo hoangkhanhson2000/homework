@@ -18,6 +18,7 @@ public class InternalException extends RuntimeException {
     }
 
     public int getCode() {
+
         return this.responseCode == null ? 1 : this.responseCode.getCode();
     }
 

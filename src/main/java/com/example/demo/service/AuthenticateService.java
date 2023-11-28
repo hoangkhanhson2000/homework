@@ -57,18 +57,14 @@ public class AuthenticateService {
                                 ResponseCode.PASSWORDS_NOT_MATCH.getCode(),
                                 ResponseCode.PASSWORDS_NOT_MATCH.getMessage()));
             }
-
             Users users = new Users();
             users.setUsername(request.getUsername());
             users.setEmail(request.getEmail());
             users.setPassword(passwordEncoder.encode(request.getPassword()));
-
             userRepository.save(users);
-
             Roles defaultRoles = roleRepository.findByRoleName(roleName).orElseThrow(() ->
                     new RuntimeException(String.valueOf(
                             ResponseCode.ROLE_NOT_FOUND)));
-
 
             UserRole userRole = new UserRole();
             userRole.setUser(users);
@@ -88,11 +84,8 @@ public class AuthenticateService {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             String jwt = jwtTokenProvider.generateToken(authentication);
-
             JwtResponse jwtResponse = new JwtResponse(jwt);
             return ResponseEntity.ok(new ResponseBase<>(jwtResponse));
         } catch (AuthenticationException e) {
@@ -107,30 +100,24 @@ public class AuthenticateService {
     public ResponseEntity<ResponseBase<UserInfoResponse>> getUserInfo() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
         Users user = userRepository.findByUsername(username).orElse(null);
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseBase<>(
                             ResponseCode.USER_NOT_FOUND.getCode(),
                             ResponseCode.USER_NOT_FOUND.getMessage()));
         }
-
         List<UserRole> userRoles = userRoleRepository.findByUser(user);
-
         List<String> permissions = new ArrayList<>();
         for (UserRole userRole : userRoles) {
             List<RolePermission> rolePermissions = rolePermissionRepository.findByRoles(userRole.getRole());
             permissions.addAll(rolePermissions.stream().map(RolePermission::getPermission).toList());
         }
-
         UserInfoResponse userInfoResponse = new UserInfoResponse(
                 username,
                 user.getEmail(),
                 userRoles.stream().map(userRole -> userRole.getRole().getRoleName()).collect(Collectors.toList()),
                 permissions);
-
         return ResponseEntity.ok(new ResponseBase<>(userInfoResponse));
     }
 

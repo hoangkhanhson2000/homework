@@ -1,5 +1,7 @@
 package com.example.demo.entity;
+
 import javax.persistence.*;
+
 import lombok.Data;
 
 import java.util.UUID;

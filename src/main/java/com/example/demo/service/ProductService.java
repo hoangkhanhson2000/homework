@@ -27,7 +27,6 @@ public class ProductService {
     public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getExpiredProducts(Pageable pageable) {
         LocalDate currentDate = LocalDate.now();
         Page<Product> productPage = productRepository.findByExpireDateAfter(currentDate, pageable);
-
         List<ProductResponse> productResponses = productPage.getContent()
                 .stream()
                 .map(product -> {
@@ -47,7 +46,6 @@ public class ProductService {
         pageResponse.setTotalElements((int) productPage.getTotalElements());
         pageResponse.setTotalPages(productPage.getTotalPages());
         pageResponse.setData(Collections.singletonList(productResponses));
-
         return ResponseEntity.ok(new ResponseBase<>(pageResponse));
     }
 
@@ -55,7 +53,6 @@ public class ProductService {
     public ResponseEntity<ResponseBase<CreatedResponse>> saveProduct(ProductRequest request) {
         Product product = convertToProduct(request);
         productRepository.save(product);
-
         CreatedResponse createdResponse = new CreatedResponse(product.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseBase<>(createdResponse));
     }
@@ -72,10 +69,8 @@ public class ProductService {
     public ResponseEntity<ResponseBase<Object>> updateProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
         updateProductFields(existingProduct, request);
         productRepository.save(existingProduct);
-
         return ResponseEntity.noContent().build();
     }
 
@@ -101,14 +96,12 @@ public class ProductService {
                     return response;
                 })
                 .toList();
-
         PageResponse<List<ProductResponse>> pageResponse = new PageResponse<>();
         pageResponse.setPage(productPage.getNumber());
         pageResponse.setSize(productPage.getSize());
         pageResponse.setTotalElements((int) productPage.getTotalElements());
         pageResponse.setTotalPages(productPage.getTotalPages());
         pageResponse.setData(Collections.singletonList(productResponses));
-
         return ResponseEntity.ok(new ResponseBase<>(pageResponse));
     }
 

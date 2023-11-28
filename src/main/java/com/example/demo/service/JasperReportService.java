@@ -25,10 +25,8 @@ public class JasperReportService {
     public byte[] exportProductsToPdf() throws IOException, JRException {
         InputStream inputStream = new ClassPathResource("product_report.jrxml").getInputStream();
         JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-
         List<Map<String, Object>> dataSource = new ArrayList<>();
         List<Product> products = productRepository.findAll();
-
         for (Product product : products) {
             Map<String, Object> data = new HashMap<>();
             data.put("id", product.getId());
@@ -38,16 +36,11 @@ public class JasperReportService {
             data.put("expireDate", product.getExpireDate());
             data.put("categoryCode", product.getCategory().getCode());
             data.put("categoryName", product.getCategory().getName());
-
             dataSource.add(data);
         }
-
         Map<String, Object> parameters = null;
-
         JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(dataSource);
-
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanCollectionDataSource);
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
 

@@ -85,22 +85,18 @@ public class ProductController {
     public ResponseEntity<byte[]> exportProductsToExcel() throws IOException {
         List<Product> products = productRepository.findAll();
         byte[] excelContent = excelExportService.exportProductsToExcel(products);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         headers.setContentDispositionFormData("attachment", "products.xlsx");
-
         return new ResponseEntity<>(excelContent, headers, org.springframework.http.HttpStatus.OK);
     }
 
     @GetMapping("/export/pdf")
     public ResponseEntity<byte[]> exportProductsToPdf() throws IOException, JRException {
         byte[] pdfContent = jasperReportService.exportProductsToPdf();
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "products.pdf");
-
         return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
 

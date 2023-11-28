@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.base.CreatedResponse;
 import com.example.demo.base.ResponseBase;
-import com.example.demo.base.UpdatedResponse;
 import com.example.demo.modal.RoleRequest;
 import com.example.demo.service.AdminService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,10 +24,8 @@ public class AdminController {
         return adminService.createRole(roleRequest);
     }
 
-
-
     @PostMapping("/update-permission/{roleId}")
-    public ResponseEntity<ResponseBase<UpdatedResponse>> updatePermissions(@PathVariable Long roleId, @RequestBody List<String> permissions) {
+    public ResponseEntity<ResponseBase<Object>> updatePermissions(@PathVariable Long roleId, @RequestBody List<String> permissions) {
         adminService.updatePermissions(roleId, permissions);
         return ResponseEntity.noContent().build();
     }

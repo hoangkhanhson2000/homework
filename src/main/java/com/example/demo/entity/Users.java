@@ -1,4 +1,5 @@
 package com.example.demo.entity;
+
 import lombok.Data;
 
 
@@ -9,10 +10,10 @@ import java.util.Set;
 @Entity
 @Table(name = "USERS")
 public class Users {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-
     private String username;
     private String password;
     private String email;

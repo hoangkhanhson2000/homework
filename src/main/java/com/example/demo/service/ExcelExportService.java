@@ -15,7 +15,6 @@ public class ExcelExportService {
     public byte[] exportProductsToExcel(List<Product> products) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Products");
-
             Row headerRow = sheet.createRow(0);
             headerRow.createCell(0).setCellValue("ID");
             headerRow.createCell(1).setCellValue("Code");
@@ -23,7 +22,6 @@ public class ExcelExportService {
             headerRow.createCell(3).setCellValue("Price");
             headerRow.createCell(4).setCellValue("Expire Date");
             headerRow.createCell(5).setCellValue("Category");
-
             int rowNum = 1;
             for (Product product : products) {
                 Row row = sheet.createRow(rowNum++);
@@ -34,7 +32,6 @@ public class ExcelExportService {
                 row.createCell(4).setCellValue(product.getExpireDate().toString());
                 row.createCell(5).setCellValue(product.getCategory().getName());
             }
-
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 workbook.write(outputStream);
                 return outputStream.toByteArray();

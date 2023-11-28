@@ -79,7 +79,6 @@ public class CategoryService {
         return ResponseEntity.noContent().build();
     }
 
-
     private void updateProductsForCategory(Long categoryId) {
         List<Product> products = productRepository.findByCategoryId(categoryId);
         for (Product product : products) {

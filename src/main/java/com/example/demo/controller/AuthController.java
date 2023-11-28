@@ -30,17 +30,17 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseBase<?>>  registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ResponseBase<?>> registerUser(@RequestBody RegisterRequest request) {
         return authenticateService.registerUser(request, "USER");
     }
 
     @PostMapping("/register-admin")
-    public ResponseEntity<ResponseBase<?>>  registerAdmin(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ResponseBase<?>> registerAdmin(@RequestBody RegisterRequest request) {
         return authenticateService.registerUser(request, "ADMIN");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseBase<?>>  loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ResponseBase<?>> loginUser(@RequestBody LoginRequest loginRequest) {
         return authenticateService.loginUser(loginRequest, authenticationManager, jwtTokenProvider);
     }
 
