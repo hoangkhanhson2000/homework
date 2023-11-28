@@ -1,73 +1,104 @@
 package com.example.demo.controller;
 
+import com.example.demo.base.CreatedResponse;
+import com.example.demo.base.PageResponse;
+import com.example.demo.base.ResponseBase;
 import com.example.demo.entity.Product;
-import com.example.demo.service.ExcelExporter;
-import com.example.demo.service.PdfExporter;
+import com.example.demo.modal.ProductRequest;
+import com.example.demo.modal.ProductResponse;
+import com.example.demo.repository.ProductRepository;
+import com.example.demo.service.ExcelExportService;
+import com.example.demo.service.JasperReportService;
 import com.example.demo.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
+@Tag(name = "Product")
 public class ProductController {
+
+    @Autowired
+    private ProductRepository productRepository;
+
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/expired")
-    public ResponseEntity<List<Product>> getExpiredProducts() {
-        List<Product> expiredProducts = productService.getProductsByExpireDate();
-        return new ResponseEntity<>(expiredProducts, HttpStatus.OK);
+    @Autowired
+    private ExcelExportService excelExportService;
+
+    @Autowired
+    private JasperReportService jasperReportService;
+
+
+    @GetMapping("/products/expired")
+    public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getExpiredProducts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return productService.getExpiredProducts(pageable);
     }
 
+
     @PostMapping
-    public ResponseEntity<String> addOrUpdateProduct(@RequestBody Product product) {
-        productService.saveOrUpdateProduct(product);
-        return new ResponseEntity<>("Product saved successfully", HttpStatus.CREATED);
+    public ResponseEntity<ResponseBase<CreatedResponse>> saveProduct(@RequestBody ProductRequest productRequest) {
+        return productService.saveProduct(productRequest);
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getAllProducts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productService.getAllProducts(pageable);
+    }
+
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<ResponseBase<Object>> updateProduct(
+            @PathVariable Long productId,
+            @RequestBody ProductRequest productRequest) {
+        return productService.updateProduct(productId, productRequest);
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
-        productService.deleteProduct(productId);
-        return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+    public ResponseEntity<ResponseBase<Object>> deleteProduct(@PathVariable Long productId) {
+        return productService.deleteProduct(productId);
     }
+
+
     @GetMapping("/export/excel")
-    public ResponseEntity<byte[]> exportProductsToExcel() {
-        List<Product> products = productService.getAllProducts();
-
-        String fileName = "products.xlsx";
-
-        byte[] excelBytes = ExcelExporter.exportToExcel(products, fileName);
-
+    public ResponseEntity<byte[]> exportProductsToExcel() throws IOException {
+        List<Product> products = productRepository.findAll();
+        byte[] excelContent = excelExportService.exportProductsToExcel(products);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-        headers.setContentDispositionFormData("attachment", fileName);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(excelBytes);
+        headers.setContentDispositionFormData("attachment", "products.xlsx");
+        return new ResponseEntity<>(excelContent, headers, org.springframework.http.HttpStatus.OK);
     }
+
     @GetMapping("/export/pdf")
-    public ResponseEntity<byte[]> exportProductsToPdf() {
-        List<Product> products = productService.getAllProducts();
-
-        String fileName = "products.pdf";
-
-        return PdfExporter.exportToPdf(products, fileName);
+    public ResponseEntity<byte[]> exportProductsToPdf() throws IOException, JRException {
+        byte[] pdfContent = jasperReportService.exportProductsToPdf();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "products.pdf");
+        return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
     }
+
 
 }

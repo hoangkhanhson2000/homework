@@ -3,42 +3,40 @@ package com.example.demo.service;
 import com.example.demo.entity.Product;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class ExcelExporter {
-    public static byte[] exportToExcel(List<Product> products, String outputFile) {
+@Service
+public class ExcelExportService {
+
+    public byte[] exportProductsToExcel(List<Product> products) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Products");
             Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Product Name");
-            headerRow.createCell(1).setCellValue("Product Code");
-            headerRow.createCell(2).setCellValue("Category Name");
+            headerRow.createCell(0).setCellValue("ID");
+            headerRow.createCell(1).setCellValue("Code");
+            headerRow.createCell(2).setCellValue("Name");
             headerRow.createCell(3).setCellValue("Price");
             headerRow.createCell(4).setCellValue("Expire Date");
             headerRow.createCell(5).setCellValue("Category");
-
             int rowNum = 1;
             for (Product product : products) {
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(product.getName());
+                row.createCell(0).setCellValue(product.getId());
                 row.createCell(1).setCellValue(product.getCode());
-                row.createCell(2).setCellValue(product.getCategory().getName());
+                row.createCell(2).setCellValue(product.getName());
                 row.createCell(3).setCellValue(product.getPrice());
                 row.createCell(4).setCellValue(product.getExpireDate().toString());
-                row.createCell(4).setCellValue(product.getCategory().getName());
-
+                row.createCell(5).setCellValue(product.getCategory().getName());
             }
-
-            // Lưu workbook vào file
-            try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
-                workbook.write(fileOut);
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                workbook.write(outputStream);
+                return outputStream.toByteArray();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return new byte[0];
     }
 }
+

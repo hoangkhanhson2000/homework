@@ -1,14 +1,21 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Category;
+import com.example.demo.base.CreatedResponse;
+import com.example.demo.base.PageResponse;
+import com.example.demo.base.ResponseBase;
 import com.example.demo.entity.Product;
-import com.example.demo.repo.CategoryRepository;
-import com.example.demo.repo.ProductRepository;
+import com.example.demo.modal.ProductRequest;
+import com.example.demo.modal.ProductResponse;
+import com.example.demo.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -17,52 +24,96 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    public List<Product> getProductsByExpireDate() {
+    public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getExpiredProducts(Pageable pageable) {
         LocalDate currentDate = LocalDate.now();
-        return productRepository.findByExpireDateAfter(currentDate);
+        Page<Product> productPage = productRepository.findByExpireDateAfter(currentDate, pageable);
+        List<ProductResponse> productResponses = productPage.getContent()
+                .stream()
+                .map(product -> {
+                    ProductResponse response = new ProductResponse();
+                    response.setId(product.getId());
+                    response.setPName(product.getName());
+                    response.setPCode(product.getCode());
+                    response.setCName(product.getCategory().getName());
+                    response.setPrice(product.getPrice());
+                    response.setExpDate(product.getExpireDate());
+                    return response;
+                })
+                .toList();
+        PageResponse<List<ProductResponse>> pageResponse = new PageResponse<>();
+        pageResponse.setPage(productPage.getNumber());
+        pageResponse.setSize(productPage.getSize());
+        pageResponse.setTotalElements((int) productPage.getTotalElements());
+        pageResponse.setTotalPages(productPage.getTotalPages());
+        pageResponse.setData(Collections.singletonList(productResponses));
+        return ResponseEntity.ok(new ResponseBase<>(pageResponse));
     }
 
-    public void saveOrUpdateProduct(Product product) {
+
+    public ResponseEntity<ResponseBase<CreatedResponse>> saveProduct(ProductRequest request) {
+        Product product = convertToProduct(request);
         productRepository.save(product);
+        CreatedResponse createdResponse = new CreatedResponse(product.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseBase<>(createdResponse));
     }
 
-    public void deleteProduct(Long productId) {
+
+    private void updateProductFields(Product product, ProductRequest request) {
+        product.setCode(request.getCode());
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+        product.setExpireDate(request.getExpireDate());
+        product.setCategory(request.getCategory());
+    }
+
+    public ResponseEntity<ResponseBase<Object>> updateProduct(Long productId, ProductRequest request) {
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        updateProductFields(existingProduct, request);
+        productRepository.save(existingProduct);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<ResponseBase<Object>> deleteProduct(Long productId) {
         productRepository.deleteById(productId);
+        return ResponseEntity.noContent().build();
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+
+    public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getAllProducts(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductResponse> productResponses = productPage.getContent()
+                .stream()
+                .map(product -> {
+                    ProductResponse response = new ProductResponse();
+                    response.setId(product.getId());
+                    response.setPName(product.getName());
+                    response.setPCode(product.getCode());
+                    response.setCName(product.getCategory().getName());
+                    response.setPrice(product.getPrice());
+                    response.setExpDate(product.getExpireDate());
+                    return response;
+                })
+                .toList();
+        PageResponse<List<ProductResponse>> pageResponse = new PageResponse<>();
+        pageResponse.setPage(productPage.getNumber());
+        pageResponse.setSize(productPage.getSize());
+        pageResponse.setTotalElements((int) productPage.getTotalElements());
+        pageResponse.setTotalPages(productPage.getTotalPages());
+        pageResponse.setData(Collections.singletonList(productResponses));
+        return ResponseEntity.ok(new ResponseBase<>(pageResponse));
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
-    }
 
-    public void saveOrUpdateCategory(Category category) {
-        // Trước khi lưu hoặc cập nhật Category, cập nhật Product trong Category này
-        if (category.getId() != null) {
-            List<Product> products = productRepository.findByCategoryId(category.getId());
-            for (Product product : products) {
-                product.setCategory(null);
-                productRepository.save(product);
-            }
-        }
-
-        categoryRepository.save(category);
-    }
-
-    public void deleteCategory(Long categoryId) {
-        // Trước khi xóa Category, cập nhật Product trong Category này
-        List<Product> products = productRepository.findByCategoryId(categoryId);
-        for (Product product : products) {
-            product.setCategory(null);
-            productRepository.save(product);
-        }
-
-        categoryRepository.deleteById(categoryId);
+    private Product convertToProduct(ProductRequest request) {
+        Product product = new Product();
+        product.setCode(request.getCode());
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+        product.setExpireDate(request.getExpireDate());
+        product.setCategory(request.getCategory());
+        return product;
     }
 }
 
