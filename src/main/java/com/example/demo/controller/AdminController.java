@@ -22,9 +22,9 @@ public class AdminController {
 
     @PostMapping("/create-role")
     public ResponseEntity<ResponseBase<CreatedResponse>> createRole(@RequestBody RoleRequest roleRequest) {
-        CreatedResponse createdResponse = adminService.createRole(roleRequest);
-        return ResponseEntity.ok(new ResponseBase<>(createdResponse));
+        return adminService.createRole(roleRequest);
     }
+
 
 
     @PostMapping("/update-permission/{roleId}")

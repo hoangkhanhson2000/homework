@@ -10,6 +10,7 @@ import com.example.demo.modal.RoleRequest;
 import com.example.demo.repository.RolePermissionRepository;
 import com.example.demo.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +25,9 @@ public class AdminService {
     private RoleRepository roleRepository;
 
     @Transactional
-    public CreatedResponse createRole(RoleRequest roleRequest) {
+    public ResponseEntity<ResponseBase<CreatedResponse>> createRole(RoleRequest roleRequest) {
         if (roleRepository.findByRoleName(roleRequest.getRoleName()).isPresent()) {
-            throw new RuntimeException(String.valueOf(
-
-                            ResponseCode.ROLE_EXISTED.getMessage())
-            );
+            throw new RuntimeException(String.valueOf(ResponseCode.ROLE_EXISTED.getMessage()));
         }
 
         Roles role = new Roles();
@@ -43,12 +41,13 @@ public class AdminService {
             rolePermissionRepository.save(rolePermission);
         }
 
-        return new CreatedResponse(role.getRoleId());
+        return ResponseEntity.ok(new ResponseBase<>(new CreatedResponse(role.getRoleId())));
     }
 
 
+
     @Transactional
-    public UpdatedResponse updatePermissions(Long roleId, List<String> permissions) {
+    public void updatePermissions(Long roleId, List<String> permissions) {
         Roles role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(
 
@@ -75,7 +74,7 @@ public class AdminService {
             }
         }
 
-        return new UpdatedResponse(role.getRoleId());
+        new UpdatedResponse(role.getRoleId());
     }
 
 
