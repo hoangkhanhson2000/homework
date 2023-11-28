@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 
 public class ProductResponse {
+    private Long id;
     private String pName;
     private String pCode;
     private String cName;

@@ -32,6 +32,7 @@ public class ProductService {
                 .stream()
                 .map(product -> {
                     ProductResponse response = new ProductResponse();
+                    response.setId(product.getId());
                     response.setPName(product.getName());
                     response.setPCode(product.getCode());
                     response.setCName(product.getCategory().getName());
@@ -91,6 +92,7 @@ public class ProductService {
                 .stream()
                 .map(product -> {
                     ProductResponse response = new ProductResponse();
+                    response.setId(product.getId());
                     response.setPName(product.getName());
                     response.setPCode(product.getCode());
                     response.setCName(product.getCategory().getName());
@@ -109,7 +111,6 @@ public class ProductService {
 
         return ResponseEntity.ok(new ResponseBase<>(pageResponse));
     }
-
 
 
     private Product convertToProduct(ProductRequest request) {

@@ -34,6 +34,7 @@ public class CategoryService {
                 .stream()
                 .map(category -> {
                     CategoryResponse response = new CategoryResponse();
+                    response.setId(category.getId());
                     response.setCName(category.getName());
                     response.setCCode(category.getCode());
                     return response;

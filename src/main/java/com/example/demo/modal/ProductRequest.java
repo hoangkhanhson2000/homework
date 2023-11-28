@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class ProductRequest {
 
+
     private String code;
 
     private String name;
