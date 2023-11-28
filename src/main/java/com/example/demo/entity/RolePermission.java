@@ -17,6 +17,4 @@ public class RolePermission {
     private Roles roles;
 
     private String permission;
-
-
 }

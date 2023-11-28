@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.base.ResponseBase;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.entity.Roles;
 import com.example.demo.entity.UserRole;
 import com.example.demo.entity.Users;
+import com.example.demo.exception.ResponseCode;
 import com.example.demo.modal.LoginRequest;
 import com.example.demo.modal.RegisterRequest;
 import com.example.demo.modal.UserInfoResponse;
@@ -21,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,10 +49,13 @@ public class AuthenticateService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<?> registerUser(RegisterRequest request, String roleName) {
+    public ResponseEntity<ResponseBase<?>> registerUser(RegisterRequest request, String roleName) {
         if (userRepository.findByUsername(request.getUsername()).isEmpty()) {
             if (!request.getPassword().equals(request.getConfirmPassword())) {
-                return ResponseEntity.badRequest().body("Passwords do not match");
+                return ResponseEntity.badRequest().body(
+                        new ResponseBase<>(
+                                ResponseCode.PASSWORDS_NOT_MATCH.getCode(),
+                                ResponseCode.PASSWORDS_NOT_MATCH.getMessage()));
             }
 
             Users users = new Users();
@@ -61,8 +65,10 @@ public class AuthenticateService {
 
             userRepository.save(users);
 
-            Roles defaultRoles = roleRepository.findByRoleName(roleName)
-                    .orElseThrow(() -> new RuntimeException("Default role not found"));
+            Roles defaultRoles = roleRepository.findByRoleName(roleName).orElseThrow(() ->
+                    new RuntimeException(String.valueOf(
+                            ResponseCode.ROLE_NOT_FOUND)));
+
 
             UserRole userRole = new UserRole();
             userRole.setUser(users);
@@ -71,11 +77,14 @@ public class AuthenticateService {
 
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.badRequest().body("Username already exists");
+            return ResponseEntity.badRequest().body(
+                    new ResponseBase<>(
+                            ResponseCode.USER_EXISTED.getCode(),
+                            ResponseCode.USER_EXISTED.getMessage()));
         }
     }
 
-    public ResponseEntity<?> loginUser(LoginRequest loginRequest, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public ResponseEntity<ResponseBase<?>> loginUser(LoginRequest loginRequest, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -84,20 +93,28 @@ public class AuthenticateService {
 
             String jwt = jwtTokenProvider.generateToken(authentication);
 
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            JwtResponse jwtResponse = new JwtResponse(jwt);
+            return ResponseEntity.ok(new ResponseBase<>(jwtResponse));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ResponseBase<>(
+                            ResponseCode.USER_UNAUTHORIZED.getCode(),
+                            ResponseCode.USER_UNAUTHORIZED.getMessage()));
         }
     }
 
-    public ResponseEntity<?> getUserInfo() {
+
+    public ResponseEntity<ResponseBase<UserInfoResponse>> getUserInfo() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
 
         Users user = userRepository.findByUsername(username).orElse(null);
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponseBase<>(
+                            ResponseCode.USER_NOT_FOUND.getCode(),
+                            ResponseCode.USER_NOT_FOUND.getMessage()));
         }
 
         List<UserRole> userRoles = userRoleRepository.findByUser(user);
@@ -114,7 +131,8 @@ public class AuthenticateService {
                 userRoles.stream().map(userRole -> userRole.getRole().getRoleName()).collect(Collectors.toList()),
                 permissions);
 
-        return ResponseEntity.ok(userInfoResponse);
+        return ResponseEntity.ok(new ResponseBase<>(userInfoResponse));
     }
+
 
 }

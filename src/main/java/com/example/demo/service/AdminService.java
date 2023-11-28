@@ -1,7 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.base.CreatedResponse;
+import com.example.demo.base.ResponseBase;
+import com.example.demo.base.UpdatedResponse;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.entity.Roles;
+import com.example.demo.exception.ResponseCode;
 import com.example.demo.modal.RoleRequest;
 import com.example.demo.repository.RolePermissionRepository;
 import com.example.demo.repository.RoleRepository;
@@ -20,9 +24,12 @@ public class AdminService {
     private RoleRepository roleRepository;
 
     @Transactional
-    public void createRole(RoleRequest roleRequest) {
+    public CreatedResponse createRole(RoleRequest roleRequest) {
         if (roleRepository.findByRoleName(roleRequest.getRoleName()).isPresent()) {
-            throw new RuntimeException("Role with the same name already exists");
+            throw new RuntimeException(String.valueOf(
+
+                            ResponseCode.ROLE_EXISTED.getMessage())
+            );
         }
 
         Roles role = new Roles();
@@ -35,13 +42,17 @@ public class AdminService {
             rolePermission.setPermission(permission);
             rolePermissionRepository.save(rolePermission);
         }
+
+        return new CreatedResponse(role.getRoleId());
     }
 
 
     @Transactional
-    public void updatePermissions(Long roleId, List<String> permissions) {
+    public UpdatedResponse updatePermissions(Long roleId, List<String> permissions) {
         Roles role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new RuntimeException(String.valueOf(
+
+                                ResponseCode.ROLE_NOT_FOUND.getMessage())));
 
         List<RolePermission> existingPermissions = rolePermissionRepository.findByRoles(role);
 
@@ -63,6 +74,9 @@ public class AdminService {
                 rolePermissionRepository.save(rolePermission);
             }
         }
+
+        return new UpdatedResponse(role.getRoleId());
     }
+
 
 }

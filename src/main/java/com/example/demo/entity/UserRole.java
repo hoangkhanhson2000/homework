@@ -1,10 +1,8 @@
 package com.example.demo.entity;
 
-import javax.persistence.*;
-
 import lombok.Data;
-import org.hibernate.annotations.Type;
 
+import javax.persistence.*;
 import java.util.UUID;
 
 @Data
