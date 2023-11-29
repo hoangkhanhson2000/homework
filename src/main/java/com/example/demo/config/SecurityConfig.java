@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/auth/register", "/auth/login").permitAll()
                 .antMatchers("/auth/user-info").authenticated()
+                .antMatchers("/api/categories").hasRole("ADMIN")
                 .and()
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
@@ -46,10 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/v3/api-docs", "/swagger-ui/**", "/swagger-ui.html");
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
