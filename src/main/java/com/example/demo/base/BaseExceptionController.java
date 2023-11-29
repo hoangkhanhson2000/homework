@@ -1,10 +1,13 @@
 package com.example.demo.base;
 
 import com.example.demo.exception.InternalException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -70,4 +73,17 @@ public class BaseExceptionController {
                 HttpStatus.FORBIDDEN);
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, ex) -> {
+            log.error("Access Denied: {}, trace: {}", ex.getMessage(), getTrace(ex));
+            ResponseEntity<ResponseBase<?>> responseEntity = new ResponseEntity<>(
+                    new ResponseBase<>(
+                            CommonResponseCode.ACCESS_DENIED.getCode(),
+                            CommonResponseCode.ACCESS_DENIED.getMessage()),
+                    HttpStatus.FORBIDDEN);
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseEntity.getBody()));
+        };
+    }
 }

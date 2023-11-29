@@ -35,7 +35,12 @@ spring:
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    properties:
-      hibernate-dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+logging:
+  level:
+    org.hibernate: DEBUG

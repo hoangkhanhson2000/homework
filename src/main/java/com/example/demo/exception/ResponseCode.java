@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ResponseCode implements IResponseCode {
     USER_NOT_FOUND(1404, "User not found", HttpStatus.NOT_FOUND),
-    USER_UNAUTHORIZED(1403, "Unauthorized", HttpStatus.UNAUTHORIZED),
+        USERNAME_PASSWORD_INVALID(1403, "Username or Password wrong", HttpStatus.UNAUTHORIZED),
     PASSWORDS_NOT_MATCH(1000, "Password not match"),
     USER_EXISTED(1001, "Username Existed"),
     ROLE_NOT_FOUND(2404, "Role not found"),

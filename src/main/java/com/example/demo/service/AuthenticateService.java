@@ -91,8 +91,8 @@ public class AuthenticateService {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     new ResponseBase<>(
-                            ResponseCode.USER_UNAUTHORIZED.getCode(),
-                            ResponseCode.USER_UNAUTHORIZED.getMessage()));
+                            ResponseCode.USERNAME_PASSWORD_INVALID.getCode(),
+                            ResponseCode.USERNAME_PASSWORD_INVALID.getMessage()));
         }
     }
 
@@ -120,6 +120,5 @@ public class AuthenticateService {
                 permissions);
         return ResponseEntity.ok(new ResponseBase<>(userInfoResponse));
     }
-
 
 }

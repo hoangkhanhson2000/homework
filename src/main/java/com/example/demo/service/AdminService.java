@@ -4,10 +4,15 @@ import com.example.demo.base.CreatedResponse;
 import com.example.demo.base.ResponseBase;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.entity.Roles;
+import com.example.demo.entity.UserRole;
+import com.example.demo.entity.Users;
 import com.example.demo.exception.ResponseCode;
+import com.example.demo.modal.RoleIdRequest;
 import com.example.demo.modal.RoleRequest;
 import com.example.demo.repository.RolePermissionRepository;
 import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,12 @@ public class AdminService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
     @Transactional
     public ResponseEntity<ResponseBase<CreatedResponse>> createRole(RoleRequest roleRequest) {
@@ -41,12 +52,11 @@ public class AdminService {
     }
 
 
-
     @Transactional
     public void updatePermissions(Long roleId, List<String> permissions) {
         Roles role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(
-                                ResponseCode.ROLE_NOT_FOUND.getMessage())));
+                        ResponseCode.ROLE_NOT_FOUND.getMessage())));
         List<RolePermission> existingPermissions = rolePermissionRepository.findByRoles(role);
         existingPermissions.removeIf(permission -> !permissions.contains(permission.getPermission()));
 
@@ -64,6 +74,37 @@ public class AdminService {
                 rolePermission.setPermission(permission);
                 rolePermissionRepository.save(rolePermission);
             }
+        }
+    }
+
+    @Transactional
+    public void assignRoles(Long userId, RoleIdRequest request) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException(String.valueOf(ResponseCode.USER_NOT_FOUND.getMessage())));
+
+        for (Long roleId : request.getRoleIds()) {
+            Roles role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new RuntimeException(String.valueOf(ResponseCode.ROLE_NOT_FOUND.getMessage())));
+
+            if (user.getRoles().stream().noneMatch(r -> r.getRoleId().equals(roleId))) {
+                UserRole userRole = new UserRole();
+                userRole.setUser(user);
+                userRole.setRole(role);
+                userRoleRepository.save(userRole);
+            }
+        }
+    }
+
+    @Transactional
+    public void removeRoles(Long userId,RoleIdRequest request) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException(String.valueOf(ResponseCode.USER_NOT_FOUND.getMessage())));
+
+        for (Long roleId : request.getRoleIds()) {
+            Roles role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new RuntimeException(String.valueOf(ResponseCode.ROLE_NOT_FOUND.getMessage())));
+
+            userRoleRepository.deleteByUserAndRole(user, role);
         }
     }
 }
