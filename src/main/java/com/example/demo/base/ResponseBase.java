@@ -34,4 +34,6 @@ public class ResponseBase<T> {
         this.message = responseCode.getMessage();
         this.code = responseCode.getCode();
     }
+
+
 }

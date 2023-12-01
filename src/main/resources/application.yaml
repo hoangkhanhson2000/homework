@@ -5,9 +5,9 @@ swagger:
   server-url: ${SERVER_HOST_URL_SWAGGER:http://localhost:1124}
 
 minio:
-  endpoint: http://localhost:9001
-  access-key: minioadmin
-  secret-key: minioadmin
+  endpoint: http://localhost:9000
+  access-key: admin
+  secret-key: adminadmin
   bucket-name: test
 
 app:

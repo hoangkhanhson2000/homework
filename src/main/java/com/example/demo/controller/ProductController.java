@@ -11,8 +11,8 @@ import com.example.demo.service.ExcelExportService;
 import com.example.demo.service.JasperReportService;
 import com.example.demo.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -23,24 +23,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
 @Tag(name = "Product")
+@RequiredArgsConstructor
+
 public class ProductController {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    private ExcelExportService excelExportService;
+    private final ExcelExportService excelExportService;
 
-    @Autowired
-    private JasperReportService jasperReportService;
+    private final JasperReportService jasperReportService;
 
 
     @GetMapping("/products/expired")

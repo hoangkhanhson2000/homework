@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Product;
 import com.example.demo.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class JasperReportService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public byte[] exportProductsToPdf() throws IOException, JRException {
         InputStream inputStream = new ClassPathResource("product_report.jrxml").getInputStream();

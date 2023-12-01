@@ -7,7 +7,7 @@ import com.example.demo.entity.Product;
 import com.example.demo.modal.ProductRequest;
 import com.example.demo.modal.ProductResponse;
 import com.example.demo.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,9 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public ResponseEntity<ResponseBase<PageResponse<List<ProductResponse>>>> getExpiredProducts(Pageable pageable) {
         LocalDate currentDate = LocalDate.now();

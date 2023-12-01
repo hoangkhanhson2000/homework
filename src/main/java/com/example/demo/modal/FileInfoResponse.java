@@ -1,9 +1,9 @@
-package com.example.demo.entity;
+package com.example.demo.modal;
 
 import lombok.Data;
 
 @Data
-public class FileInfo {
+public class FileInfoResponse {
     private String filename;
     private Long size;
     private String url;

@@ -7,7 +7,7 @@ import com.example.demo.modal.UserInfoResponse;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.AuthenticateService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "Authenticator")
 @RequestMapping("/auth")
+@RequiredArgsConstructor
+
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-
-    @Autowired
-    private AuthenticateService authenticateService;
+    private final AuthenticateService authenticateService;
 
 
     @PostMapping("/register")

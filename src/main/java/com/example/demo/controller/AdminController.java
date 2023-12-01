@@ -6,6 +6,7 @@ import com.example.demo.modal.RoleIdRequest;
 import com.example.demo.modal.RoleRequest;
 import com.example.demo.service.AdminService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +16,11 @@ import java.util.List;
 @RestController
 @Tag(name = "Admin")
 @RequestMapping("/admin")
+@RequiredArgsConstructor
+
 public class AdminController {
 
-    @Autowired
-    private AdminService adminService;
+    private final AdminService adminService;
 
     @PostMapping("/create-role")
     public ResponseEntity<ResponseBase<CreatedResponse>> createRole(@RequestBody RoleRequest roleRequest) {
@@ -30,6 +32,7 @@ public class AdminController {
         adminService.updatePermissions(roleId, permissions);
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/assign-roles/{userId}")
     public ResponseEntity<ResponseBase<Object>> assignRoles(@PathVariable Long userId, @RequestBody RoleIdRequest request) {
         adminService.assignRoles(userId, request);

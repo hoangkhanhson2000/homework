@@ -66,12 +66,14 @@ public class BaseExceptionController {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        log.error("Access Denied: {}, trace: {}", e.getMessage(), getTrace(e));
         return new ResponseEntity<>(
                 new ResponseBase<>(
                         CommonResponseCode.ACCESS_DENIED.getCode(),
                         CommonResponseCode.ACCESS_DENIED.getMessage()),
                 HttpStatus.FORBIDDEN);
     }
+
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {

@@ -9,6 +9,7 @@ import com.example.demo.modal.CategoryRequest;
 import com.example.demo.modal.CategoryResponse;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +20,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public ResponseEntity<ResponseBase<PageResponse<List<CategoryResponse>>>> getAllCategories(Pageable pageable) {
         Page<Category> categoryPage = categoryRepository.findAll(pageable);

@@ -21,8 +21,9 @@ public enum CommonResponseCode implements IResponseCode {
     REQUEST_PENDING(13, "Request is pending"),
     REFRESH_TOKEN_INVALID(14, "Refresh token failed"),
     NOT_FOUND_DATA(15, "Not found data", HttpStatus.NOT_FOUND),
-    OUT_OF_SCOPE(16, "Out of scope"),
-    MEDIA_UPLOAD_FAILED(17, "Upload image failed"),
+    NOT_EXISTED(16, "not existed"),
+    OUT_OF_SCOPE(17, "Out of scope"),
+    MEDIA_UPLOAD_FAILED(18, "Upload image failed"),
 
     ;
 

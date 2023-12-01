@@ -7,7 +7,7 @@ import com.example.demo.modal.CategoryRequest;
 import com.example.demo.modal.CategoryResponse;
 import com.example.demo.service.CategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @Tag(name = "Category")
+@RequiredArgsConstructor
+
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<ResponseBase<PageResponse<List<CategoryResponse>>>> getAllCategories(
