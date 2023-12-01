@@ -1,8 +1,8 @@
 server:
-  port: ${SERVER_PORT:9000}
+  port: ${SERVER_PORT:1124}
 
 swagger:
-  server-url: ${SERVER_HOST_URL_SWAGGER:http://localhost:9000}
+  server-url:${SERVER_HOST_URL_SWAGGER:http://localhost:1124}
 
 app:
   jwt:
@@ -18,29 +18,35 @@ spring:
     serialization:
       fail-on-empty-beans: false
 
-  datasource:
-    url: ${SECOND_DATABASE_URL:jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8}
-    username: ${SECOND_DATABASE_USER:root}
-    password: ${SECOND_DATABASE_PASSWORD:123456}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      pool-name: hikari-credit-2
-      auto-commit: true
-      data-source-properties:
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-      minimum-idle: 3
-      maximum-pool-size: 20
-  jpa:
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+datasource:
+  url: ${SECOND_DATABASE_URL:jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8}
+  username: ${SECOND_DATABASE_USER:root}
+  password: ${SECOND_DATABASE_PASSWORD:123456}
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  hikari:
+    pool-name: hikari-credit-2
+    auto-commit: true
+    data-source-properties:
+      cachePrepStmts: true
+      prepStmtCacheSize: 250
+      prepStmtCacheSqlLimit: 2048
+    minimum-idle: 3
+    maximum-pool-size: 20
+jpa:
+  show-sql: true
+  database-platform: org.hibernate.dialect.MySQL8Dialect
+  hibernate:
+    ddl-auto: update
+  properties:
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+      dialect: org.hibernate.dialect.MySQL8Dialect
 
 logging:
   level:
     org.hibernate: DEBUG
+
+minio:
+  endpoint: http://localhost:9001
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: test
