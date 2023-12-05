@@ -116,8 +116,6 @@ public class FileUploadService {
                 fileInfo.setUrl(minioClient.getPresignedObjectUrl(urlArgs));
 
                 return new ResponseBase<>(fileInfo);
-            } else {
-                throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
             }
         } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException |
                 InternalException | InvalidResponseException | NoSuchAlgorithmException |
@@ -125,6 +123,7 @@ public class FileUploadService {
             log.error(CommonResponseCode.FAILED.getMessage(), e);
             throw new RuntimeException(CommonResponseCode.FAILED.getMessage());
         }
+        return null;
     }
 
 
@@ -160,9 +159,7 @@ public class FileUploadService {
             );
             return stat != null;
         } catch (Exception e) {
-            throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage());
+            throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
         }
     }
-
-
 }
