@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,15 +39,19 @@ public class FileUploadService {
     public ResponseEntity<ResponseBase<Object>> uploadFile(MultipartFile file) {
         try {
             String objectName = file.getOriginalFilename();
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(objectName)
-                            .stream(file.getInputStream(), file.getSize(), -1)
-                            .contentType(file.getContentType())
-                            .build()
-            );
-            return ResponseEntity.noContent().build();
+            if (!fileExists(objectName)) {
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object(objectName)
+                                .stream(file.getInputStream(), file.getSize(), -1)
+                                .contentType(file.getContentType())
+                                .build()
+                );
+                return ResponseEntity.noContent().build();
+            } else {
+                throw new RuntimeException(CommonResponseCode.EXISTED_DATA.getMessage() + " file: " + objectName);
+            }
         } catch (InvalidKeyException | NoSuchAlgorithmException | ErrorResponseException |
                  InsufficientDataException | InternalException | InvalidResponseException |
                  ServerException | XmlParserException | IOException e) {
@@ -154,7 +157,7 @@ public class FileUploadService {
             );
             return stat != null;
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage());
         }
     }
 
