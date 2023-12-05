@@ -119,11 +119,14 @@ public class FileUploadService {
             } else {
                 throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
             }
-        } catch (Exception e) {
+        } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException |
+                InternalException | InvalidResponseException | NoSuchAlgorithmException |
+                ServerException | XmlParserException | IOException e) {
             log.error(CommonResponseCode.FAILED.getMessage(), e);
             throw new RuntimeException(CommonResponseCode.FAILED.getMessage());
         }
     }
+
 
 
     public ResponseEntity<Object> deleteFile(String objectName) {
