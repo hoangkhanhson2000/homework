@@ -24,7 +24,7 @@ public enum CommonResponseCode implements IResponseCode {
     NOT_EXISTED(16, "not existed"),
     OUT_OF_SCOPE(17, "Out of scope"),
     MEDIA_UPLOAD_FAILED(18, "Upload image failed"),
-
+    INVALID_FILE_TYPE(19,"Invalid file type. Only image files (PNG, JPG, JPEG, etc.) are allowed.")
     ;
 
     private final int code;

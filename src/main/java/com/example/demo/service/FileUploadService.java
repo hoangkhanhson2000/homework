@@ -39,6 +39,9 @@ public class FileUploadService {
     public ResponseEntity<ResponseBase<Object>> uploadFile(MultipartFile file) {
         try {
             String objectName = file.getOriginalFilename();
+            if (!isImage(file)) {
+                throw new RuntimeException(CommonResponseCode.INVALID_FILE_TYPE.getMessage());
+            }
             if (!fileExists(objectName)) {
                 minioClient.putObject(
                         PutObjectArgs.builder()
@@ -149,6 +152,14 @@ public class FileUploadService {
         }
     }
 
+    private boolean isImage(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        if (fileName != null) {
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            return List.of("png", "jpg", "jpeg", "gif", "bmp").contains(fileExtension);
+        }
+        return false;
+    }
     private boolean fileExists(String objectName) {
         try {
             StatObjectResponse stat = minioClient.statObject(
@@ -162,4 +173,29 @@ public class FileUploadService {
             throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
         }
     }
+
+    public ResponseEntity<byte[]> downloadFile(String objectName) {
+        try {
+            if (fileExists(objectName)) {
+                GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .build();
+
+                byte[] fileBytes = minioClient.getObject(getObjectArgs).readAllBytes();
+
+                return ResponseEntity.ok()
+                        .header("Content-Disposition", "attachment; filename=\"" + objectName + "\"")
+                        .body(fileBytes);
+            } else {
+                throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
+            }
+        } catch (InvalidKeyException | NoSuchAlgorithmException | ErrorResponseException |
+                 InsufficientDataException | InternalException | InvalidResponseException |
+                 ServerException | XmlParserException | IOException e) {
+            log.error(CommonResponseCode.FAILED.getMessage(), e);
+            throw new RuntimeException(CommonResponseCode.FAILED.getMessage());
+        }
+    }
+
 }

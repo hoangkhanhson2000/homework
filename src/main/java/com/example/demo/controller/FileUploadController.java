@@ -49,6 +49,11 @@ public class FileUploadController {
         return fileUploadService.deleteFile(filename);
 
     }
+
+    @GetMapping("/download/{objectName}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String objectName) {
+        return fileUploadService.downloadFile(objectName);
+    }
 }
 
 
