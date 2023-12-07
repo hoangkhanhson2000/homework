@@ -4,6 +4,7 @@ import com.example.demo.base.CreatedResponse;
 import com.example.demo.base.PageResponse;
 import com.example.demo.base.ResponseBase;
 import com.example.demo.entity.Product;
+import com.example.demo.exception.ResponseCode;
 import com.example.demo.modal.ProductRequest;
 import com.example.demo.modal.ProductResponse;
 import com.example.demo.repository.ProductRepository;
@@ -68,7 +69,7 @@ public class ProductService {
 
     public ResponseEntity<ResponseBase<Object>> updateProduct(Long productId, ProductRequest request) {
         Product existingProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException(ResponseCode.PRODUCT_NOT_FOUND.getMessage()));
         updateProductFields(existingProduct, request);
         productRepository.save(existingProduct);
         return ResponseEntity.noContent().build();

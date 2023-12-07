@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Repository
-
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
     List<UserRole> findByUser(Users users);
 

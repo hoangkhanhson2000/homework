@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import lombok.Data;
 import lombok.Getter;
 
 
