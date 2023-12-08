@@ -47,6 +47,26 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+
+
 logging:
   level:
     org.hibernate: DEBUG
+
+
+kafka:
+  bootstrap-servers: kafka-148d899c-fpt-92f3.a.aivencloud.com:14918
+  properties:
+    ssl:
+      truststore:
+        location: classpath:kafka1/client.truststore.jks
+        password: 123456
+      keystore:
+        type: PKCS12
+        location: classpath:kafka1/client.keystore.p12
+        password: 123456
+      key:
+        password: 123456
+  consumer:
+    group-id: groupid
+  topic: topic1
