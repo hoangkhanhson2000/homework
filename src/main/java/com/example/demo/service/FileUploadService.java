@@ -121,14 +121,13 @@ public class FileUploadService {
                 return new ResponseBase<>(fileInfo);
             }
         } catch (InvalidKeyException | ErrorResponseException | InsufficientDataException |
-                InternalException | InvalidResponseException | NoSuchAlgorithmException |
-                ServerException | XmlParserException | IOException e) {
+                 InternalException | InvalidResponseException | NoSuchAlgorithmException |
+                 ServerException | XmlParserException | IOException e) {
             log.error(CommonResponseCode.FAILED.getMessage(), e);
             throw new RuntimeException(CommonResponseCode.FAILED.getMessage());
         }
         return null;
     }
-
 
 
     public ResponseEntity<Object> deleteFile(String objectName) {
@@ -160,6 +159,7 @@ public class FileUploadService {
         }
         return false;
     }
+
     private boolean fileExists(String objectName) {
         try {
             StatObjectResponse stat = minioClient.statObject(
@@ -170,7 +170,7 @@ public class FileUploadService {
             );
             return stat != null;
         } catch (Exception e) {
-            throw new RuntimeException(CommonResponseCode.NOT_EXISTED.getMessage() + " file: " + objectName);
+            return false;
         }
     }
 
